@@ -1,19 +1,40 @@
 {
-  "name": "useless-things-webpack-plugin",
-  "version": "0.0.2",
-  "description": "webpack deal useless things plugin",
-  "main": "index.js",
+  "name": "useless-analyzer-webpack-plugin",
+  "version": "1.0.0",
+  "description": "webpack deal useless analyzer plugin",
+  "main": "dist/index.min.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "babel src -o dist/index.min.js",
+    "clean": "rimraf dist package-lock.json node_modules"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lyana-nullptr/useless-things-webpack-plugin.git"
+    "url": "git+https://github.com/Lyana-nullptr/useless-analyzer-webpack-plugin.git"
   },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "useless",
+    "analyzer"
+  ],
   "author": "Lyana-nullptr",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Lyana-nullptr/useless-things-webpack-plugin/issues"
+    "url": "https://github.com/Lyana-nullptr/useless-analyzer-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/Lyana-nullptr/useless-things-webpack-plugin#readme",
+  "homepage": "https://github.com/Lyana-nullptr/useless-analyzer-webpack-plugin#readme",
   "dependencies": {
-    "shelljs": "^0.9.2"
+    "shelljs": "^0.9.2",
+    "glob": "^8.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "rimraf": "^5.0.10"
+  },
+  "peerDependencies": {
+    "webpack": ">=4.0.0"
   }
 }

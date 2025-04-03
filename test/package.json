@@ -1,0 +1,16 @@
+{
+  "name": "test-useless-analyzer-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Test project for useless-analyzer-webpack-plugin",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "author": "Lyana-nullptr",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.47.0",
+    "webpack-cli": "^3.3.12"
+  }
+}
