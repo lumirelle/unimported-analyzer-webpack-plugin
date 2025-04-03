@@ -28,58 +28,78 @@ npm install useless-analyzer-webpack-plugin -D
 
 ## 使用方法 Usage
 
+> 插件功能仅在开发环境下有效！
+
 在你的 webpack 配置文件中：
 
 ```javascript
-const UselessAnalyzerWebpackPlugin = require("useless-analyzer-webpack-plugin");
+const UselessAnalyzerWebpackPlugin = require('useless-analyzer-webpack-plugin')
 
 module.exports = {
   // ... 其他 webpack 配置
   plugins: [
     new UselessAnalyzerWebpackPlugin({
-      src: "src", // 源文件目录，默认为 'src'
+      src: 'src', // 源文件目录，默认为 'src'
       additionIgnores: [
         // 插件已内置基础排除列表，这里可以设置额外排除的目录或文件，使用 glob 模式
-        "**/targets/**/*", // 例如：排除所有 targets 文件夹下的所有文件
-        "app.html", // 例如：排除 app.html
+        '**/targets/**/*', // 例如：排除所有 targets 文件夹下的所有文件
+        'app.html', // 例如：排除 app.html
       ],
-      output: ".useless/unused-files.json", // 输出文件路径，默认为 '.useless/unused-files.json'
+      output: '.useless/unused-files.json', // 输出文件路径，默认为 '.useless/unused-files.json'
       debug: false, // 是否显示调试输出，默认为 'false'
     }),
   ],
-};
+}
 ```
+
+> Plugin function only works in development environment!
 
 In your webpack config file:
 
 ```javascript
-const UselessAnalyzerWebpackPlugin = require("useless-analyzer-webpack-plugin");
+const UselessAnalyzerWebpackPlugin = require('useless-analyzer-webpack-plugin')
 
 module.exports = {
   // ... Other webpack configs
   plugins: [
     new UselessAnalyzerWebpackPlugin({
-      src: "src", // Source dir, default: 'src'
+      src: 'src', // Source dir, default: 'src'
       additionIgnores: [
         // Plugin has a built-in base exclusion list, where you can set additional excluded directories or files, using glob mode
-        "**/targets/**/*", // For example, exclude all files in the targets folder
-        "app.html", // For example, exclude app.html
+        '**/targets/**/*', // For example, exclude all files in the targets folder
+        'app.html', // For example, exclude app.html
       ],
-      output: ".useless/unused-files.json", // Output file path, default: '.useless/unused-files.json'
+      output: '.useless/unused-files.json', // Output file path, default: '.useless/unused-files.json'
       debug: false, // Whether to show debug log, default: 'false'
     }),
   ],
-};
+}
+```
+
+## 配置示例（Nuxt.js 2） Configuration Example (Nuxt.js 2)
+
+nuxt.config.js
+
+```js
+export default {
+  // ...
+  build: {
+    // ...
+    plugins: [
+      new UselessAnalyzerWebpackPlugin({
+        src: './',
+        additionIgnores: ['app.html', 'app/**/*', 'modules/**/*', 'router/**/*'],
+        debug: false,
+      }),
+    ],
+  },
+}
 ```
 
 ## 输出示例 Output Example
 
 ```json
-[
-  "src/components/UnusedComponent.js",
-  "src/utils/helper.js",
-  "src/styles/old.css"
-]
+["src/components/UnusedComponent.js", "src/utils/helper.js", "src/styles/old.css"]
 ```
 
 ## 注意事项 Note

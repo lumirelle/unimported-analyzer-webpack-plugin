@@ -1,4 +1,4 @@
-import { usedUtil } from "./utils/used";
-import { UnusedComponent } from "./components/UnusedComponent";
+import { usedUtil } from './utils/used';
+import { UnusedButImportedComponent } from './components/UnusedButImportedComponent';
 
 console.log(usedUtil());

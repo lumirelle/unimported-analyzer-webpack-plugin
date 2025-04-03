@@ -4,13 +4,12 @@ const glob = require("glob");
 
 const DEFAULT_OPTIONS = {
   src: "src",
+  // NOTE：dot files & dot folders 默认被 glob 忽略
   basicIgnores: [
     // 忽略常见的构建和依赖目录
     "**/node_modules/**/*",
     "**/dist/**/*",
     "**/build/**/*",
-    "**/.next/**/*",
-    "**/.nuxt/**/*",
     // 忽略常见的配置文件
     "**/*.config.js",
     "**/*.config.ts",
@@ -18,15 +17,8 @@ const DEFAULT_OPTIONS = {
     "**/*.config.yaml",
     "**/*.config.yml",
     // 忽略常见的工具配置文件
-    "**/.eslintrc.*",
-    "**/.prettierrc.*",
-    "**/.babelrc.*",
-    "**/.stylelintrc.*",
-    "**/.editorconfig",
-    "**/.gitignore",
-    "**/.dockerignore",
-    "**/.browserslistrc",
-    "**/.nvmrc",
+    "**/sonar-project.properties",
+    "**/jsconfig.json",
     // 忽略常见的包管理文件
     "**/package.json",
     "**/package-lock.json",
@@ -46,6 +38,11 @@ const DEFAULT_OPTIONS = {
     "**/assets/**/*",
     "**/public/**/*",
     "**/static/**/*",
+    // 忽略常见的脚本文件
+    "**/*.sh",
+    "**/*.bat",
+    "**/*.ps1",
+    "**/sudo",
     // 忽略常见的非源代码文件
     "**/src/**/*.d.ts",
     "**/src/**/*.map",

@@ -1,11 +1,12 @@
 {
   "name": "useless-analyzer-webpack-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "webpack deal useless analyzer plugin",
   "main": "dist/index.min.js",
   "scripts": {
     "prepare": "npm run build",
     "build": "babel src -o dist/index.min.js",
+    "dev": "npm run build",
     "clean": "rimraf dist package-lock.json node_modules"
   },
   "repository": {
