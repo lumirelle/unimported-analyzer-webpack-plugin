@@ -98,9 +98,16 @@ export default {
 
 ## 输出示例 Output Example
 
+<!-- prettier-ignore -->
 ```json
-["src/components/UnusedComponent.js", "src/utils/helper.js", "src/styles/old.css"]
+[
+  "src/components/UnusedComponent.js", 
+  "src/utils/helper.js",
+  "src/styles/old.css"
+]
 ```
+
+<!-- prettier-ignore-end -->
 
 ## 注意事项 Note
 
@@ -109,3 +116,14 @@ export default {
 
 - The plugin will be executed after the webpack build is complete
 - The paths in the output file are relative to the src path you set
+
+## 发布日志 Release Note
+
+### v1.x.x
+
+#### v1.0.x
+
+- v1.0.0: Refactor
+- v1.0.1: Add ignores
+- v1.0.2: Update github repo url
+- v1.0.3: Add release note

@@ -1,6 +1,6 @@
 {
   "name": "useless-analyzer-webpack-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "webpack deal useless analyzer plugin",
   "main": "dist/index.min.js",
   "scripts": {
