@@ -1,178 +1,216 @@
 const fs = require('fs')
 const path = require('path')
+
 const glob = require('glob')
+const minimatch = require('minimatch')
 
-/**
- * Default options.
- */
-const DEFAULT_OPTIONS = {
-  preset: 'common',
-
-  output: '.useless/unused-files.json',
-  debug: false,
-}
-
-/**
- * Preset options.
- */
-const PRESET_OPTIONS = {
-  /**
-   * Common preset
-   */
-  common: {
-    src: './',
-    /**
-     * Common ignores, will be merged with any other preset ignores.
-     */
-    ignores: [
-      // 忽略常见的构建和依赖目录
-      'node_modules/**/*',
-      'dist/**/*',
-      'build/**/*',
-      // 忽略常见的配置文件
-      '*.config.js',
-      '*.config.ts',
-      '*.config.json',
-      '*.config.yaml',
-      '*.config.yml',
-      '*.config.toml',
-      // 忽略常见的工具配置文件
-      'sonar-project.properties',
-      'jsconfig.json',
-      // 忽略常见的包管理文件
-      'package.json',
-      'package-lock.json',
-      'yarn.lock',
-      'pnpm-lock.yaml',
-      // 忽略常见的文档文件
-      '**/*.md',
-      '**/*.txt',
-      '**/LICENSE',
-      // 忽略常见的资源文件
-      'assets/**/*',
-      'public/**/*',
-      'static/**/*',
-      // 忽略常见的脚本文件
-      '**/*.sh',
-      '**/*.bat',
-      '**/*.ps1',
-      'sudo',
-      // 忽略常见的非代码源文件
-      '**/*.d.ts',
-      '**/*.map',
-      '**/*.min.*',
-    ],
-  },
-
-  /**
-   * Vue preset
-   */
-  vue: {
-    src: './src',
-    ignores: [...PRESET_OPTIONS.common.ignores],
-  },
-
-  /**
-   * Nuxt preset
-   */
-  nuxt: {
-    src: './',
-    ignores: [...PRESET_OPTIONS.common.ignores, '.nuxt/**/*', 'app/**/*', 'modules/**/*', 'router/**/*'],
-  },
-}
+const { getMergedOptions } = require('./presets')
 
 class UselessAnalyzerWebpackPlugin {
+  /**
+   * Plugin constructor.
+   *
+   * @param {object} options
+   */
   constructor(options = {}) {
-    if (typeof options !== 'object') {
-      throw new Error('Options should be an object.')
-    }
+    this.validateOptions(options)
 
-    const preset = options.preset || DEFAULT_OPTIONS.preset
+    const mergedOptions = getMergedOptions(options)
 
-    if (!PRESET_OPTIONS[preset]) {
-      throw new Error(`Preset "${preset}" is not supported.`)
-    }
+    this.options = mergedOptions
 
-    const presetOptions = PRESET_OPTIONS[preset]
-
-    const src = options.src || presetOptions.src
-
-    if (!fs.existsSync(src)) {
-      throw new Error(`src "${src}" does not exist.`)
-    }
-    if (!fs.statSync(src).isDirectory()) {
-      throw new Error(`src "${src}" should be a directory.`)
-    }
-
-    // NOTE：dot files & dot folders 默认被 glob 忽略
-    const ignores = [...presetOptions.ignores, ...(options.ignores || [])]
-
-    if (!Array.isArray(ignores)) {
-      throw new Error(`ignores should be an array.`)
-    }
-
-    const output = options.output || presetOptions.output
-
-    const debug = options.debug || presetOptions.debug
-
-    this.options = { preset, src, ignores, output, debug }
+    // debugLog required `this.options.debug`
+    this.debugLog('🚀 ~ getMergedOptions ~ mergedOptions:', mergedOptions)
   }
 
+  /**
+   * Webpack plugin apply hook.
+   *
+   * @param {object} compiler
+   */
   apply(compiler) {
     const hooks = compiler.hooks || compiler
     const doneHook = hooks.done || hooks.afterEmit
 
     doneHook.tap('UselessAnalyzerWebpackPlugin', (stats) => {
       const compilation = stats.compilation
-      const usedFiles = new Set()
 
       const srcPath = path.resolve(process.cwd(), this.options.src)
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  srcPath:', srcPath)
 
-      // 获取所有源文件
-      const allFiles = glob.sync('**/*', {
-        cwd: srcPath,
-        ignore: this.options.ignores,
-        nodir: true,
-        absolute: true,
-      })
+      const allFiles = this.getAllFiles(srcPath)
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  allFiles:', allFiles)
 
-      // 收集所有被使用的文件
-      compilation.modules.forEach((module) => {
-        if (module.resource) {
-          usedFiles.add(this.transformSlash(module.resource))
-        }
-      })
+      const usedFiles = this.getUsedFiles(compilation)
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  usedFiles:', usedFiles)
 
-      // 找出未使用的文件
       const unusedFiles = allFiles.filter((file) => !usedFiles.has(file))
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  unusedFiles:', unusedFiles)
 
-      // 将文件路径转换为相对于项目根目录的路径
-      const result = unusedFiles.map((file) => {
-        return this.transformSlash(path.relative(process.cwd(), file))
-      })
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  result:', result)
-
-      // 写入结果到文件
-      const outputDir = path.dirname(this.options.output)
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true })
-      }
-      const outputPath = path.resolve(process.cwd(), this.options.output)
-      fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf8')
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  Result saved to:', this.options.output)
+      this.saveResult(unusedFiles)
     })
   }
 
-  transformSlash(str) {
-    return str.replace(/\\/g, '/')
+  /**
+   * Validate the options provided to this plugin.
+   *
+   * @param {object} options
+   * @private
+   */
+  validateOptions(options) {
+    // Validate `options`
+    if (!options || typeof options !== 'object') {
+      throw new Error('Plugin options should be an object.')
+    }
+
+    // Validate `options.preset`
+    if (options.preset && typeof options.preset !== 'string') {
+      throw new Error('Option `preset` should be a string.')
+    }
+
+    // Validate `options.src`
+    if (options.src) {
+      if (typeof options.src !== 'string') {
+        throw new Error('Option `src` should be a string.')
+      }
+      if (!fs.existsSync(options.src)) {
+        throw new Error(`Option \`src\`: Path "${options.src}" does not exist.`)
+      }
+      if (!fs.statSync(options.src).isDirectory()) {
+        throw new Error(`Option \`src\`: Path "${options.src}" should be a directory.`)
+      }
+    }
+
+    // Validate `options.ignores`
+    if (options.ignores && !Array.isArray(options.ignores)) {
+      throw new Error('Option `ignores` should be an array.')
+    }
+
+    // Validate `options.important`
+    if (options.important && !Array.isArray(options.important)) {
+      throw new Error('Option `important` should be an array.')
+    }
+
+    // Validate `options.output`
+    if (options.output && typeof options.src !== 'string') {
+      throw new Error('Option `output` should be a string.')
+    }
+
+    // Validate `options.debug`
+    if (options.debug && typeof options.debug !== 'boolean') {
+      throw new Error('Option `debug` should be a boolean.')
+    }
   }
 
+  /**
+   * Get all files in the srcPath, excluding ignored files and including important files.
+   *
+   * @param {string} srcPath
+   * @returns {string[]} All files in the srcPath, excluding ignored files and including important files.
+   * @private
+   */
+  getAllFiles(srcPath) {
+    // Get all files in the srcPath, including dot files & directories
+    const allFilesWithoutIgnores = glob.sync('**/*', {
+      cwd: srcPath,
+      nodir: true,
+      absolute: true,
+      dot: true,
+    })
+    // Process ignored files and important files
+    return allFilesWithoutIgnores
+      .filter((file) => {
+        const relativePath = path.relative(srcPath, file)
+        return this.isImportantFile(relativePath) || !this.isIgnoreFile(relativePath)
+      })
+      .map((file) => {
+        return this.transformPath(file)
+      })
+  }
+
+  /**
+   * Get all used files from `state.compilation`.
+   *
+   * @param {object} compilation
+   * @returns {Set<string>} Set of used files.
+   * @private
+   */
+  getUsedFiles(compilation) {
+    const usedFiles = new Set()
+    compilation.modules.forEach((module) => {
+      if (module.resource) {
+        usedFiles.add(this.transformPath(module.resource))
+      }
+    })
+    return usedFiles
+  }
+
+  /**
+   * Save the result to a file.
+   *
+   * @param {string[]} unusedFiles
+   * @private
+   */
+  saveResult(unusedFiles) {
+    // Transform the unused files to relative paths
+    const result = unusedFiles.map((file) => {
+      return this.transformPath(path.relative(process.cwd(), file))
+    })
+    this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  result:', result)
+
+    // Save the result to a file
+    const outputDir = path.dirname(this.options.output)
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true })
+    }
+    const outputPath = path.resolve(process.cwd(), this.options.output)
+    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf8')
+    this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  Result saved to:', this.options.output)
+  }
+
+  /**
+   * Check if the file is ignored.
+   *
+   * @param {string} filePath
+   * @returns {boolean} If the file is ignored.
+   * @private
+   */
+  isIgnoreFile(filePath) {
+    const { ignores = [] } = this.options
+    return ignores.length > 0 && ignores.some((pattern) => minimatch(filePath, pattern, { dot: true }))
+  }
+
+  /**
+   * Check if the file is important.
+   *
+   * @param {string} filePath
+   * @returns {boolean} If the file is important.
+   * @private
+   */
+  isImportantFile(filePath) {
+    const { important = [] } = this.options
+    return important.length > 0 && important.some((pattern) => minimatch(filePath, pattern, { dot: true }))
+  }
+
+  /**
+   * Transform the path to a consistent format.
+   *
+   * @param {string} str
+   * @returns {string} Transformed path.
+   * @private
+   */
+  transformPath(str) {
+    return str.replace(/\\/g, '/').toLowerCase()
+  }
+
+  /**
+   * Console log when debug is enabled.
+   *
+   * @param {...any} args
+   * @private
+   */
   debugLog(...args) {
-    if (this.options.debug) {
+    if (this.options?.debug) {
       console.log(...args)
     }
   }

@@ -5,10 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "dev": "npm run build"
+    "build": "webpack --mode=development"
   },
-  "author": "Lyana-nullptr",
+  "author": "Lumirelle",
   "license": "MIT",
   "devDependencies": {
     "webpack": "^4.47.0",
