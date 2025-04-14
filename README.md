@@ -297,6 +297,10 @@ new UselessAnalyzerWebpackPlugin({
 - v1.0.6: Improving document
 - v1.0.7: Add important option & other improvements
 
+#### v2.0.x
+
+- v2.0.0: Remove support of node<=18
+
 ## 已知问题 / Known Issues
 
 - [ ] Nuxt 项目中，.vue 文件导入的 .scss 文件误识别为未使用文件 / In the Nuxt project, the.scss file imported from the.vue file was incorrectly identified as an unused file
