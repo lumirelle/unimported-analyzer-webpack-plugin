@@ -1,19 +1,17 @@
 {
   "name": "useless-analyzer-webpack-plugin",
-  "version": "2.0.0",
+  "version": "2.0.1",
+  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
   "description": "webpack deal useless analyzer plugin",
-  "main": "dist/index.js",
-  "scripts": {
-    "prepare": "npm run build && npm run test || (echo \"Build failed!\" && exit 1)",
-    "build": "webpack --mode=production",
-    "test": "npm run test:v4 && npm run test:v5",
-    "test:v4": "cd test-webpack4 && npm run build",
-    "test:v5": "cd test-webpack5 && npm run build",
-    "clean": "rimraf dist package-lock.json node_modules"
-  },
+  "author": "Lumirelle",
+  "license": "MIT",
+  "homepage": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lumirelle/useless-analyzer-webpack-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin/issues"
   },
   "keywords": [
     "webpack",
@@ -21,25 +19,43 @@
     "useless",
     "analyzer"
   ],
-  "author": "Lumirelle",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin/issues"
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=18"
   },
-  "homepage": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin#readme",
-  "dependencies": {
-    "glob": "^10.4.5"
-  },
-  "devDependencies": {
-    "rimraf": "^5.0.10",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+  "scripts": {
+    "build": "webpack --mode=production",
+    "test": "nr test:v4 && nr test:v5",
+    "test:v4": "cd test-webpack4 && nr build",
+    "test:v5": "cd test-webpack5 && nr build",
+    "clean": "rimraf dist pnpm-lock.yaml node_modules",
+    "prepack": "nr build",
+    "release": "bumpp && pnpm publish",
+    "lint": "eslint --cache .",
+    "postinstall": "simple-git-hooks"
   },
   "peerDependencies": {
     "webpack": ">=4.0.0"
   },
-  "engines": {
-    "node": ">=18"
+  "dependencies": {
+    "glob": "catalog:prod",
+    "minimatch": "catalog:prod"
   },
-  "packageManager": "pnpm@10.7.1+sha512.2d92c86b7928dc8284f53494fb4201f983da65f0fb4f0d40baafa5cf628fa31dae3e5968f12466f17df7e97310e30f343a648baea1b9b350685dafafffdf5808"
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:dev",
+    "@antfu/ni": "catalog:dev",
+    "bumpp": "catalog:dev",
+    "eslint": "catalog:dev",
+    "eslint-plugin-format": "catalog:dev",
+    "lint-staged": "catalog:dev",
+    "simple-git-hooks": "catalog:dev",
+    "webpack": "catalog:dev",
+    "webpack-cli": "catalog:dev"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
 }
