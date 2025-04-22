@@ -1,16 +1,16 @@
 {
-  "name": "test-useless-analyzer-webpack-plugin",
+  "name": "test-webpack4-for-useless-analyzer-webpack-plugin",
   "version": "1.0.0",
-  "description": "Test project for useless-analyzer-webpack-plugin",
   "private": true,
+  "description": "Test project for useless-analyzer-webpack-plugin",
+  "author": "Lumirelle",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode=development"
   },
-  "author": "Lumirelle",
-  "license": "MIT",
   "devDependencies": {
-    "webpack": "^4.47.0",
-    "webpack-cli": "^3.3.12"
+    "webpack": "catalog:test-webpack4",
+    "webpack-cli": "catalog:test-webpack4"
   }
 }

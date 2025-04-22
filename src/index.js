@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const glob = require('glob')
-const minimatch = require('minimatch')
+const { minimatch } = require('minimatch')
 
 const { getMergedOptions } = require('./presets')
 
@@ -44,7 +44,7 @@ class UselessAnalyzerWebpackPlugin {
       const usedFiles = this.getUsedFiles(compilation)
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  usedFiles:', usedFiles)
 
-      const unusedFiles = allFiles.filter((file) => !usedFiles.has(file))
+      const unusedFiles = allFiles.filter(file => !usedFiles.has(file))
       this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  unusedFiles:', unusedFiles)
 
       this.saveResult(unusedFiles)
@@ -71,7 +71,7 @@ class UselessAnalyzerWebpackPlugin {
     // Validate `options.src`
     if (options.src) {
       if (typeof options.src !== 'string') {
-        throw new Error('Option `src` should be a string.')
+        throw new TypeError('Option `src` should be a string.')
       }
       if (!fs.existsSync(options.src)) {
         throw new Error(`Option \`src\`: Path "${options.src}" does not exist.`)
@@ -164,7 +164,7 @@ class UselessAnalyzerWebpackPlugin {
       fs.mkdirSync(outputDir, { recursive: true })
     }
     const outputPath = path.resolve(process.cwd(), this.options.output)
-    fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf8')
+    fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`, 'utf8')
     this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  Result saved to:', this.options.output)
   }
 
@@ -177,7 +177,7 @@ class UselessAnalyzerWebpackPlugin {
    */
   isIgnoreFile(filePath) {
     const { ignores = [] } = this.options
-    return ignores.length > 0 && ignores.some((pattern) => minimatch(filePath, pattern, { dot: true }))
+    return ignores.length > 0 && ignores.some(pattern => minimatch(filePath, pattern, { dot: true }))
   }
 
   /**
@@ -189,7 +189,7 @@ class UselessAnalyzerWebpackPlugin {
    */
   isImportantFile(filePath) {
     const { important = [] } = this.options
-    return important.length > 0 && important.some((pattern) => minimatch(filePath, pattern, { dot: true }))
+    return important.length > 0 && important.some(pattern => minimatch(filePath, pattern, { dot: true }))
   }
 
   /**

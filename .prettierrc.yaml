@@ -1,9 +1,0 @@
-# Minimal Prettier Config
-# Lumirelle (shabbyacc@outlook.com)
-
-semi: false
-singleQuote: true
-
-endOfLine: auto
-
-printWidth: 120

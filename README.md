@@ -229,9 +229,10 @@ const PRESET_OPTIONS = {
 
 选项 / Options:
 
+Webpack project
+
 ```js
-// Webpack project
-new UselessAnalyzerWebpackPlugin({
+const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
   preset: 'webpack',
   ignores: [
     // 添加你需要忽略的文件... / Add files you need to ignore...
@@ -240,9 +241,12 @@ new UselessAnalyzerWebpackPlugin({
     // 添加你不想忽略的文件... / Add files you don't want to ignore...
   ],
 })
+```
 
-// Vue project
-new UselessAnalyzerWebpackPlugin({
+Vue project
+
+```js
+const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
   preset: 'vue',
   ignores: [
     // 添加你需要忽略的文件... / Add files you need to ignore...
@@ -251,9 +255,12 @@ new UselessAnalyzerWebpackPlugin({
     // 添加你不想忽略的文件... / Add files you don't want to ignore...
   ],
 })
+```
 
-// Nuxt 2 project
-new UselessAnalyzerWebpackPlugin({
+Nuxt 2 project
+
+```js
+const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
   preset: 'nuxt',
   ignores: [
     // 添加你需要忽略的文件... / Add files you need to ignore...
@@ -269,10 +276,10 @@ new UselessAnalyzerWebpackPlugin({
 <!-- prettier-ignore -->
 ```json
 [
-  "assets/styles/old.css"
-  "src/components/UnusedComponent.vue", 
+  "assets/styles/old.css",
+  "src/components/UnusedComponent.vue",
   "src/api/deprecated.js",
-  "src/utils/useless.js",
+  "src/utils/useless.js"
 ]
 ```
 
@@ -300,6 +307,7 @@ new UselessAnalyzerWebpackPlugin({
 #### v2.0.x
 
 - v2.0.0: Remove support of node<=18
+- v2.0.1: Change to monorepo
 
 ## 已知问题 / Known Issues
 

@@ -103,8 +103,8 @@ const PRESET_OPTIONS = {
 /**
  * Gets the merged configuration options
  *
- * @param {Object} userOptions Options provided by the user
- * @returns {Object} Merged options
+ * @param {object} userOptions Options provided by the user
+ * @returns {object} Merged options
  */
 function getMergedOptions(userOptions = {}) {
   const preset = userOptions.preset || DEFAULT_OPTIONS.preset
