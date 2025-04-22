@@ -20,6 +20,9 @@
     "analyzer"
   ],
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "engines": {
     "node": ">=18"
   },
