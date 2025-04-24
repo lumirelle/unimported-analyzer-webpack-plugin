@@ -32,7 +32,7 @@
     "test:v4": "cd test/webpack4 && nr build",
     "test:v5": "cd test/webpack5 && nr build",
     "prepack": "nr build",
-    "release": "bumpp && pnpm publish",
+    "release": "bumpp && na publish",
     "lint": "eslint --cache .",
     "postinstall": "simple-git-hooks"
   },
