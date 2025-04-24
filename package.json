@@ -29,9 +29,8 @@
   "scripts": {
     "build": "webpack --mode=production",
     "test": "nr test:v4 && nr test:v5",
-    "test:v4": "cd test-webpack4 && nr build",
-    "test:v5": "cd test-webpack5 && nr build",
-    "clean": "rimraf dist pnpm-lock.yaml node_modules",
+    "test:v4": "cd test/webpack4 && nr build",
+    "test:v5": "cd test/webpack5 && nr build",
     "prepack": "nr build",
     "release": "bumpp && pnpm publish",
     "lint": "eslint --cache .",

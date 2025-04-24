@@ -1,5 +1,5 @@
 const path = require('path')
-const UselessAnalyzerWebpackPlugin = require('../dist/index.js')
+const UselessAnalyzerWebpackPlugin = require('../../dist/index.js')
 
 module.exports = (env, argv) => {
   const mode = argv.mode

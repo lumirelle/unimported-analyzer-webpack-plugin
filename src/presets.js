@@ -26,7 +26,10 @@ const DEFAULT_OPTIONS = {
     'package-lock.json',
     'yarn.lock',
     'pnpm-lock.yaml',
-    // dot files & dot dirs
+    'pnpm-workspace.yaml',
+    'bun.lockb',
+    // dot dirs & dot files
+    '.*/**/*',
     '**/.*',
     // documentation files
     '**/*.md',
@@ -60,7 +63,9 @@ const PRESET_OPTIONS = {
    */
   common: {
     src: './',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores,
+    ],
     important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
@@ -71,7 +76,9 @@ const PRESET_OPTIONS = {
    */
   webpack: {
     src: './src',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores,
+    ],
     important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
@@ -82,7 +89,9 @@ const PRESET_OPTIONS = {
    */
   vue: {
     src: './src',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores,
+    ],
     important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
@@ -93,7 +102,13 @@ const PRESET_OPTIONS = {
    */
   nuxt: {
     src: './',
-    ignores: [...DEFAULT_OPTIONS.ignores, '.nuxt/**/*', 'app/**/*', 'modules/**/*', 'router/**/*', 'app.html'],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores,
+      'app/**/*',
+      'modules/**/*',
+      'router/**/*',
+      'app.html',
+    ],
     important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,

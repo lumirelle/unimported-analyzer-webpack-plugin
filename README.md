@@ -30,16 +30,16 @@ In your webpack config file:
 const UselessAnalyzerWebpackPlugin = require('useless-analyzer-webpack-plugin')
 
 module.exports = {
-  // 其他 webpack 配置 ... / Other webpack configs ...
+  // ...
 
   plugins: [
-    // 其他 webpack 插件 ... / Other webpack plugins ...
+    // ...
     new UselessAnalyzerWebpackPlugin({
       // 插件选项 ... / Plugin options ...
     }),
   ],
 
-  // 其他 webpack 配置 ... / Other webpack configs ...
+  // ...
 }
 ```
 
@@ -49,7 +49,7 @@ module.exports = {
 
 ```ts
 /**
- * @description 插件选项 / Plugin Options
+ * @description 插件选项接口定义 / Plugin Options Interface Definition
  */
 interface Options {
   /**
@@ -74,29 +74,24 @@ interface Options {
   /**
    * @description 源文件的位置
    *
-   * @default 取决于预设
-   *
    * @description Where are the source files located
    *
-   * @default Depends on preset
+   * @default 取决于预设 / Depends on preset
    */
   src: string
 
   /**
    * @description 要忽略的文件，支持 glob 模式，会同预设提供的默认 ignores 合并
    *
-   * @default 取决于预设
-   *
    * @description Files to ignore, support glob pattern. These will merge with
    * the default ignores provided by preset
    *
-   * @default Depends on preset
+   * @default 取决于预设 / Depends on preset
    */
   ignores: string[]
 
   /**
    * @description 不允许忽略的文件，支持 glob 模式
-   *
    *
    * @description Files that are not allowed to be ignored, support glob pattern
    *
@@ -128,49 +123,51 @@ interface Options {
 
 ```js
 /**
- * Default options.
+ * 默认选项。 / Default options.
  */
 const DEFAULT_OPTIONS = {
   preset: 'common',
   /**
-   * Default ignores, will be merged with any other preset ignores.
+   * 默认忽略项，会合并到预设忽略项中。 / Default ignores, will be merged with any other preset ignores.
    */
   ignores: [
-    // node_modules & build output
+    // node_modules & 构建输出 / node_modules & build output
     'node_modules/**/*',
     'dist/**/*',
     'build/**/*',
-    // config files
+    // 配置文件 / config files
     '*.config.js',
     '*.config.ts',
     '*.config.json',
     '*.config.yaml',
     '*.config.yml',
     '*.config.toml',
-    // tool profiles
+    // 工具配置 / tool profiles
     'sonar-project.properties',
     'jsconfig.json',
-    // package manager files
+    // 包管理器文件 / package manager files
     'package.json',
     'package-lock.json',
     'yarn.lock',
     'pnpm-lock.yaml',
-    // dot files & dot dirs
+    'pnpm-workspace.yaml',
+    // 点文件夹和文件 / dot dirs & dot files
+    '.*/**/*',
     '**/.*',
-    // documentation files
+    // 文档文件 / documentation files
     '**/*.md',
     '**/*.txt',
     '**/LICENSE',
-    // resources
+    // 资源 / resources
     'assets/**/*',
     'public/**/*',
     'static/**/*',
-    // scripts
+    // 脚本 / scripts
     '**/*.sh',
     '**/*.bat',
     '**/*.ps1',
     'sudo',
-    // non-source files
+    // 非源码文件 / non-source files
     '**/*.d.ts',
     '**/*.map',
     '**/*.min.*',
@@ -180,45 +177,57 @@ const DEFAULT_OPTIONS = {
 }
 
 /**
- * Preset options.
+ * 预设选项。 / Preset options.
  */
 const PRESET_OPTIONS = {
   /**
-   * Common preset -- Default
+   * 通用预设 —— 默认 / Common preset -- Default
    */
   common: {
     src: './',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores
+    ],
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
 
   /**
-   * Webpack preset
+   * Webpack 预设 / Webpack preset
    */
   webpack: {
     src: './src',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores
+    ],
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
 
   /**
-   * Vue preset
+   * Vue 预设 / Vue preset
    */
   vue: {
     src: './src',
-    ignores: [...DEFAULT_OPTIONS.ignores],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores
+    ],
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
 
   /**
-   * Nuxt preset
+   * Nuxt 预设 / Nuxt preset
    */
   nuxt: {
     src: './',
-    ignores: [...DEFAULT_OPTIONS.ignores, '.nuxt/**/*', 'app/**/*', 'modules/**/*', 'router/**/*'],
+    ignores: [
+      ...DEFAULT_OPTIONS.ignores,
+      'app/**/*',
+      'modules/**/*',
+      'router/**/*',
+      'app.html',
+    ],
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
@@ -229,46 +238,40 @@ const PRESET_OPTIONS = {
 
 选项 / Options:
 
-Webpack project
+webpack.config.js
 
 ```js
-const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
-  preset: 'webpack',
-  ignores: [
-    // 添加你需要忽略的文件... / Add files you need to ignore...
-  ],
-  important: [
-    // 添加你不想忽略的文件... / Add files you don't want to ignore...
-  ],
-})
+// TODO: Need example
 ```
 
-Vue project
+vue.config.js
 
 ```js
-const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
-  preset: 'vue',
-  ignores: [
-    // 添加你需要忽略的文件... / Add files you need to ignore...
-  ],
-  important: [
-    // 添加你不想忽略的文件... / Add files you don't want to ignore...
-  ],
-})
+// TODO: Need example
 ```
 
-Nuxt 2 project
+nuxt.config.js
 
 ```js
-const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
-  preset: 'nuxt',
-  ignores: [
-    // 添加你需要忽略的文件... / Add files you need to ignore...
-  ],
-  important: [
-    // 添加你不想忽略的文件... / Add files you don't want to ignore...
-  ],
-})
+export default {
+  // ...
+
+  build: {
+    plugins: [
+      new UselessAnalyzerWebpackPlugin({
+        preset: 'nuxt',
+        ignores: [
+          // 添加你需要忽略的文件... / Add files you need to ignore...
+        ],
+        important: [
+          // 添加你不想忽略的文件... / Add files you don't want to ignore...
+        ],
+      })
+    ]
+  }
+
+  // ...
+}
 ```
 
 输出 / Output:
@@ -288,7 +291,7 @@ const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
 ## 注意事项 / Attention
 
 - 插件会在 webpack 构建完成后执行 / The plugin will be executed after the webpack build is complete
-- 输出文件中的路径是相对于你设置的 src 路径的 / The paths in the output file are relative to the src path you set
+- 输出文件中的路径是相对于你设置给 `src` 选项的路径 / The path in the output file is relative to the path you set for the 'src' option
 
 ## 发布日志 / Release Note
 
@@ -308,7 +311,17 @@ const uselessAnalyzerPlugin = new UselessAnalyzerWebpackPlugin({
 
 - v2.0.0: Remove support of node<=18
 - v2.0.1: Change to monorepo
+- v2.0.2: Set files field in package.json, to reduce package size
+- v2.0.3: Update ignores & documents
 
 ## 已知问题 / Known Issues
 
-- [ ] Nuxt 项目中，.vue 文件导入的 .scss 文件误识别为未使用文件 / In the Nuxt project, the.scss file imported from the.vue file was incorrectly identified as an unused file
+- [ ] Nuxt 项目中的 `.scss` 检测 / `.scss` files detection in Nuxt project
+
+  描述 / Description：
+
+  Nuxt 项目中，`.vue` 文件导入的 `.scss` 文件误识别为未使用文件 / In the Nuxt project, the `.scss` file imported from the `.vue` file was incorrectly identified as an unused file
+
+  临时方案 / Temporary Solution：
+
+  暂时将 `.scss` 文件添加至排除项 / Temporarily add the `.scss` file to ignores
