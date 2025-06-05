@@ -262,6 +262,7 @@ export default {
         preset: 'nuxt',
         ignores: [
           // 添加你需要忽略的文件... / Add files you need to ignore...
+          '**/*.scss',
         ],
         important: [
           // 添加你不想忽略的文件... / Add files you don't want to ignore...
