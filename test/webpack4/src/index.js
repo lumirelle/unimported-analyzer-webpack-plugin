@@ -1,5 +1,10 @@
-// eslint-disable-next-line no-unused-vars, unused-imports/no-unused-imports
-import { UnusedButImportedComponent } from './components/UnusedButImportedComponent'
-import { usedUtil } from './utils/used'
+// If the file is imported, it will be considered as used, regardless of whether it is used in the code or not
+import { ImportedButUnusedComponent } from './components/importedButUnused'
 
-console.log(usedUtil())
+import { importedUtil } from './utils/imported'
+import importedCss from './assets/styles/imported.css'
+import importedImage from './assets/images/imported.png'
+
+console.log(importedUtil())
+console.log(importedCss)
+console.log(importedImage)

@@ -11,16 +11,15 @@ const DEFAULT_OPTIONS = {
     'node_modules/**/*',
     'dist/**/*',
     'build/**/*',
+    'bin/**/*',
     // config files
-    '*.config.js',
-    '*.config.ts',
-    '*.config.json',
-    '*.config.yaml',
-    '*.config.yml',
-    '*.config.toml',
-    // tool profiles
-    'sonar-project.properties',
-    'jsconfig.json',
+    '*.config.*',
+    // profiles
+    '*.properties',
+    '*.json',
+    '*.yaml',
+    '*.yml',
+    '*.toml',
     // package manager files
     'package.json',
     'package-lock.json',
@@ -35,10 +34,6 @@ const DEFAULT_OPTIONS = {
     '**/*.md',
     '**/*.txt',
     '**/LICENSE',
-    // resources
-    'assets/**/*',
-    'public/**/*',
-    'static/**/*',
     // scripts
     '**/*.sh',
     '**/*.bat',
