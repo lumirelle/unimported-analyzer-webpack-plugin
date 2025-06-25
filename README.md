@@ -308,12 +308,16 @@ const PRESET_OPTIONS = {
 
 ## 🚫 已知问题 / Known Issues
 
-- [ ] Nuxt 项目中的 `.scss` 检测 / `.scss` files detection in Nuxt project
+- [x] `.{sass, scss}` 检测 / `.{sass, scss}` files detection
 
   描述 / Description：
 
-  Nuxt 项目中，`.vue` 文件导入的 `.scss` 文件误识别为未使用文件 / In the Nuxt project, the `.scss` file imported from the `.vue` file was incorrectly identified as an unused file
+  使用 `@import`, `@use` 或 `@forward` 导入的 `.{sass, scss}` 文件误识别为未使用文件 / The `.{sass, scss}` file imported by `@import`, `@use` or `@forward` was incorrectly identified as an unused file
 
-  临时方案 / Temporary Solution：
+  原因 / Reason:
 
-  暂时将 `.scss` 文件添加至排除项 / Temporarily add the `.scss` file to ignores
+  `sass-loader` & `dart-sass` 会将导入的 `.{sass, scss}` 文件直接编译为内联 css，webpack 无法获取其依赖信息 / `sass-loader` & `dart-sass` compile the imported '.{sass, scss} 'file into an inline css directly, and webpack cannot obtain its dependency information
+
+  解决方案 / Solution
+
+  读取 sass-loader 处理过的文件源码，提取导入语句，递归处理和记录依赖 / Read the source code of the file processed by `sass-loader`, extract the import statements, recursively process and record the dependencies

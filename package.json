@@ -29,7 +29,8 @@
   "scripts": {
     "prepare": "simple-git-hooks",
     "build": "webpack --mode=production",
-    "test": "nr test:v4 && nr test:v5",
+    "test": "run-s test:*",
+    "test:vue3": "cd test/vue3 && nr build",
     "test:v4": "cd test/webpack4 && nr build",
     "test:v5": "cd test/webpack5 && nr build",
     "prepack": "nr build",
@@ -50,6 +51,7 @@
     "eslint": "catalog:dev",
     "eslint-plugin-format": "catalog:dev",
     "lint-staged": "catalog:dev",
+    "npm-run-all2": "catalog:dev",
     "simple-git-hooks": "catalog:dev",
     "webpack": "catalog:dev",
     "webpack-cli": "catalog:dev"

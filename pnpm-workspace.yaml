@@ -9,12 +9,18 @@ catalogs:
     eslint: ^9.25.1
     eslint-plugin-format: ^1.0.1
     lint-staged: ^15.5.1
+    npm-run-all2: ^8.0.4
     simple-git-hooks: ^2.12.1
     webpack: ^5.89.0
     webpack-cli: ^5.1.4
   prod:
     glob: ^10.4.5
     minimatch: ^9.0.5
+  test-vue3:
+    '@vue/cli-service': ~5.0.0
+    sass: ^1.89.2
+    sass-loader: version-10
+    vue: ^3.2.13
   test-webpack4:
     webpack: ^4.47.0
     webpack-cli: ^3.3.12

@@ -104,10 +104,10 @@ class UnimportedAnalyzerWebpackPlugin {
   }
 
   /**
-   * Get all files in the srcPath, excluding ignored files and including important files.
+   * Get all files under the srcPath, excluding ignored files and including important files.
    *
    * @param {string} srcPath
-   * @returns {string[]} All files in the srcPath, excluding ignored files and including important files.
+   * @returns {string[]} All files under the srcPath, excluding ignored files and including important files.
    * @private
    */
   getAllFiles(srcPath) {
@@ -125,60 +125,8 @@ class UnimportedAnalyzerWebpackPlugin {
         return this.isImportantFile(relativePath) || !this.isIgnoreFile(relativePath)
       })
       .map((file) => {
-        return this.transformPath(file)
+        return this.normalizePath(file)
       })
-  }
-
-  /**
-   * Get all used files from `state.compilation`.
-   *
-   * @param {object} compilation
-   * @returns {Set<string>} Set of used files.
-   * @private
-   */
-  getUsedFiles(compilation) {
-    const usedFiles = new Set()
-    compilation.modules.forEach((module) => {
-      if (module.resource) {
-        usedFiles.add(this.transformPath(module.resource))
-      }
-    })
-    return usedFiles
-  }
-
-  /**
-   * Save the result to a file.
-   *
-   * @param {string[]} unusedFiles
-   * @private
-   */
-  saveResult(unusedFiles) {
-    // Transform the unused files to relative paths
-    const result = unusedFiles.map((file) => {
-      return this.transformPath(path.relative(process.cwd(), file))
-    })
-    this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  result:', result)
-
-    // Save the result to a file
-    const outputDir = path.dirname(this.options.output)
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true })
-    }
-    const outputPath = path.resolve(process.cwd(), this.options.output)
-    fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`, 'utf8')
-    this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  Result saved to:', this.options.output)
-  }
-
-  /**
-   * Check if the file is ignored.
-   *
-   * @param {string} filePath
-   * @returns {boolean} If the file is ignored.
-   * @private
-   */
-  isIgnoreFile(filePath) {
-    const { ignores = [] } = this.options
-    return ignores.length > 0 && ignores.some(pattern => minimatch(filePath, pattern, { dot: true }))
   }
 
   /**
@@ -194,14 +142,187 @@ class UnimportedAnalyzerWebpackPlugin {
   }
 
   /**
-   * Transform the path to a consistent format.
+   * Check if the file is ignored.
    *
-   * @param {string} str
-   * @returns {string} Transformed path.
+   * @param {string} filePath
+   * @returns {boolean} If the file is ignored.
    * @private
    */
-  transformPath(str) {
-    return str.replace(/\\/g, '/').toLowerCase()
+  isIgnoreFile(filePath) {
+    const { ignores = [] } = this.options
+    return ignores.length > 0 && ignores.some(pattern => minimatch(filePath, pattern, { dot: true }))
+  }
+
+  /**
+   * Get all imported files from `modules`.
+   *
+   * @param {object[]} modules
+   * @returns {Set<string>} Set of imported files, in order to avoid duplicates.
+   * @private
+   */
+  getImportedFiles(modules) {
+    const importedFiles = new Set()
+
+    modules.forEach((module) => {
+      // Process all modules with resource, except node_modules
+      if (module.resource && !module.resource.includes('node_modules')) {
+        // Process common module: add resource to imported files directly
+        importedFiles.add(this.normalizePath(module.resource))
+
+        // Process module processed by `sass-loader` or `scss-loader`: manually add dependency to imported files
+        // `sass-loader` & `scss-loader` does not notify webpack that the scss files targeted by `@import`, `@use` and `@forward` are dependencies
+        // So we need to manually add them to imported files
+        if (module.loaders && module.loaders.some(loader =>
+          loader.loader.includes('sass-loader') || loader.loader.includes('scss-loader'))
+        ) {
+          // If there is a virtual module created by `vue-loader`, the path will be like `xxx.vue?vue&type=style`
+          // We should read the vue sfc file directly, so we need to remove the query parameters by using function `normalizePath`
+          this.readModuleAndExtractSassDependencies(this.normalizePath(module.resource))
+            .forEach(dep => importedFiles.add(this.normalizePath(dep)))
+        }
+      }
+    })
+
+    return importedFiles
+  }
+
+  /**
+   * Read a sass/scss module and extract its dependencies.
+   *
+   * @param {string} modulePath
+   * @returns {string[]} Array of dependent sass/scss file paths.
+   * @private
+   */
+  readModuleAndExtractSassDependencies(modulePath) {
+    try {
+      if (!fs.existsSync(modulePath)) {
+        return []
+      }
+
+      const content = fs.readFileSync(modulePath, 'utf8')
+      const imports = this.extractSassImports(content)
+
+      const dependencies = []
+      imports.forEach((importPath) => {
+        const dependency = this.resolveSassPath(modulePath, importPath)
+        if (dependency && fs.existsSync(dependency)) {
+          // recursively collect nested dependencies
+          dependencies.push(...this.readModuleAndExtractSassDependencies(dependency))
+          // add the dependency to the dependencies
+          dependencies.push(this.normalizePath(dependency))
+        }
+      })
+
+      return dependencies
+    }
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    catch (error) {
+      return []
+    }
+  }
+
+  /**
+   * Extract `@import`, `@use` and `@forward` file paths from sass/scss module content.
+   *
+   * @param {string} content
+   * @returns {string[]} Array of import paths.
+   * @private
+   */
+  extractSassImports(content) {
+    const imports = []
+
+    // match `@import`, `@use`, `@forward` statements
+    const regex = /@(?:import|use|forward)\s+['"]([^'"]+)['"]/g
+    let match = regex.exec(content)
+    while (match !== null) {
+      imports.push(match[1])
+      match = regex.exec(content)
+    }
+
+    return imports
+  }
+
+  /**
+   * Resolve sass/scss import path to relative path.
+   *
+   * @param {string} modulePath
+   * @param {string} importPath
+   * @returns {string|null} Resolved relative path or `null` if not found.
+   * @private
+   */
+  resolveSassPath(modulePath, importPath) {
+    const moduleDir = path.dirname(modulePath)
+
+    // All possible paths
+    const possiblePaths = []
+
+    // Handle non-partial files
+    if (!importPath.endsWith('.scss') && !importPath.endsWith('.sass')) {
+      possiblePaths.push(path.resolve(moduleDir, `${importPath}.scss`))
+      possiblePaths.push(path.resolve(moduleDir, `${importPath}.sass`))
+    }
+    else {
+      possiblePaths.push(path.resolve(moduleDir, importPath))
+    }
+
+    // Handle partial files (add underscore prefix)
+    const fileName = path.basename(importPath)
+    const dir = path.dirname(importPath)
+
+    if (!fileName.startsWith('_')) {
+      const partialPath = path.join(dir, `_${fileName}`)
+
+      if (!partialPath.endsWith('.scss') && !partialPath.endsWith('.sass')) {
+        possiblePaths.push(path.resolve(moduleDir, `${partialPath}.scss`))
+        possiblePaths.push(path.resolve(moduleDir, `${partialPath}.sass`))
+      }
+      else {
+        possiblePaths.push(path.resolve(moduleDir, partialPath))
+      }
+    }
+
+    // Find the first existing file, and return the relative path to the srcPath
+    for (const possiblePath of possiblePaths) {
+      if (fs.existsSync(possiblePath)) {
+        return this.normalizePath(possiblePath)
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Save the result to a file.
+   *
+   * @param {string[]} unimportedFiles
+   * @private
+   */
+  saveResult(unimportedFiles) {
+    // Transform the unimported files to relative paths
+    const result = unimportedFiles.map((file) => {
+      return this.normalizePath(path.relative(process.cwd(), file))
+    })
+    this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  result (relative to srcPath):', result)
+
+    // Save the result to a file
+    const outputDir = path.dirname(this.options.output)
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true })
+    }
+    const outputPath = path.resolve(process.cwd(), this.options.output)
+    fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`, 'utf8')
+    this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  Result saved to:', this.options.output)
+  }
+
+  /**
+   * Normalize the path to a consistent format (Also remove query parameters like `?vue&type=style`).
+   *
+   * @param {string} str
+   * @returns {string} Normalized path.
+   * @private
+   */
+  normalizePath(str) {
+    return str.replace(/\\/g, '/').replace(/\?.*$/, '').toLowerCase()
   }
 
   /**

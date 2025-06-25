@@ -1,0 +1,17 @@
+{
+  "name": "test-vue3-for-unimported-analyzer-webpack-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --mode development",
+    "build": "vue-cli-service build --mode development"
+  },
+  "dependencies": {
+    "vue": "catalog:test-vue3"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "catalog:test-vue3",
+    "sass": "catalog:test-vue3",
+    "sass-loader": "catalog:test-vue3"
+  }
+}
