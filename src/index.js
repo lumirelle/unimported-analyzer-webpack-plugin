@@ -1,5 +1,6 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
+const process = require('node:process')
 
 const glob = require('glob')
 const { minimatch } = require('minimatch')
@@ -211,6 +212,7 @@ class UselessAnalyzerWebpackPlugin {
    */
   debugLog(...args) {
     if (this.options?.debug) {
+      // eslint-disable-next-line no-console
       console.log(...args)
     }
   }

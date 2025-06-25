@@ -6,6 +6,7 @@
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
+    "source.fixAll.markdownlint": "explicit",
     "source.organizeImports": "never"
   },
   "eslint.validate": [
