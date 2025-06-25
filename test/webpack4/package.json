@@ -1,8 +1,8 @@
 {
-  "name": "test-webpack4-for-useless-analyzer-webpack-plugin",
+  "name": "test-webpack4-for-unimported-analyzer-webpack-plugin",
   "version": "1.0.0",
   "private": true,
-  "description": "Test project for useless-analyzer-webpack-plugin",
+  "description": "Test project for unimported-analyzer-webpack-plugin",
   "author": "Lumirelle",
   "license": "MIT",
   "main": "index.js",

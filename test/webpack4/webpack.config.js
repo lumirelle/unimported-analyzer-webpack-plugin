@@ -1,5 +1,5 @@
-const path = require('path')
-const UselessAnalyzerWebpackPlugin = require('../../dist/index.js')
+const path = require('node:path')
+const UnimportedAnalyzerWebpackPlugin = require('../../dist/index.js')
 
 module.exports = (env, argv) => {
   const mode = argv.mode
@@ -12,7 +12,7 @@ module.exports = (env, argv) => {
       filename: 'bundle.js',
     },
     plugins: [
-      new UselessAnalyzerWebpackPlugin({
+      new UnimportedAnalyzerWebpackPlugin({
         preset: 'webpack',
         debug: true,
       }),

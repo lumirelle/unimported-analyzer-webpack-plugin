@@ -1,40 +1,48 @@
-# Useless Analyzer Webpack Plugin
+# Unimported Analyzer Webpack Plugin
 
 这是一个用于分析项目中**未导入代码文件**的 Webpack 插件，支持 Webpack 4 和 5。
 
-This is a Webpack plugin for analyzing **unimported code files** in a project, supporting Webpack 4 and 5.
+This is a Webpack plugin for analyzing **unimported files** in a project, supporting Webpack 4 and 5.
 
-## 功能特点 / Features
+## 😎 功能特点 / Features
 
 - 支持 Webpack 4 和 5 / Support Webpack 4 and 5
 - 内置预设, 开箱即用 / Built-in presets, out of the box
 - 灵活可配置 / Flexible and configurable
 
-## 安装 / Installation
+## 🔧 安装 / Installation
 
 ```bash
-npm install useless-analyzer-webpack-plugin -D
+npm install unimported-analyzer-webpack-plugin@latest -D
+# or
+pnpm add unimported-analyzer-webpack-plugin@latest -D
 ```
 
-## 使用方法 / Usage
+## 🧠 使用方法 / Usage
 
-> 插件功能仅在 Webpack Build `mode === development` 场景下有效！
+### 指南 / Guide
+
+> 在生产环境中，Webpack会积极地对未导入的文件进行树摇优化。
+> 如果一个文件确实未导入，它可能会被完全排除在编译过程之外，所以插件会“看不到”它。
+> 正因如此，插件只会在 `mode === development` 时生效。
 >
-> Plugin function only works in Webpack Build `mode === development` scenario!
+> In production, Webpack aggressively tree-shakes and eliminates unimported files.
+> If a file is truly unimported, it might be excluded from the compilation entirely, so the plugin won’t "see" it.
+> That is why the plugin just take effect when `mode === development`
 
 在你的 webpack 配置文件中：
 
 In your webpack config file:
 
 ```javascript
-const UselessAnalyzerWebpackPlugin = require('useless-analyzer-webpack-plugin')
+const UnimportedAnalyzerWebpackPlugin = require('unimported-analyzer-webpack-plugin')
 
 module.exports = {
   // ...
 
   plugins: [
     // ...
-    new UselessAnalyzerWebpackPlugin({
+    new UnimportedAnalyzerWebpackPlugin({
       // 插件选项 ... / Plugin options ...
     }),
   ],
@@ -43,15 +51,65 @@ module.exports = {
 }
 ```
 
-## 插件选项 / Plugin Options
+### 示例 / Example
 
-### 定义 / Definition
+选项 / Options:
+
+webpack.config.js
+
+```js
+// TODO: Need example
+```
+
+vue.config.js
+
+```js
+// TODO: Need example
+```
+
+nuxt.config.js
+
+```js
+import UnimportedAnalyzerWebpackPlugin from 'unimported-analyzer-webpack-plugin'
+
+export default {
+  // ...
+
+  build: {
+    plugins: [
+      new UnimportedAnalyzerWebpackPlugin({
+        preset: 'nuxt',
+        ignores: [
+          // 添加你需要忽略的文件... / Add files you need to ignore...
+        ],
+        important: [
+          // 添加你不想忽略的文件... / Add files you don't want to ignore...
+        ],
+      })
+    ]
+  }
+
+  // ...
+}
+```
+
+输出 / Output:
+
+```json
+[
+  "src/utils/unimported.js",
+  "assets/styles/unimported.css",
+  "assets/images/unimported.png"
+]
+```
+
+## 👀 插件选项 / Plugin Options
 
 ```ts
 /**
  * @description 插件选项接口定义 / Plugin Options Interface Definition
  */
-interface Options {
+export interface Options {
   /**
    * @description 选项预设，必须是以下选项之一：
    *
@@ -100,11 +158,11 @@ interface Options {
   important: string[]
 
   /**
-   * @description 在哪里保存无用的文件报告
+   * @description 在哪里保存未导入文件的检测报告
    *
-   * @description Where to save the useless files report
+   * @description Where to save the detection report of unimported files
    *
-   * @default './useless/useless.json'
+   * @default '.unimported/unimported-files.json'
    */
   output: string
 
@@ -135,22 +193,22 @@ const DEFAULT_OPTIONS = {
     'node_modules/**/*',
     'dist/**/*',
     'build/**/*',
+    'bin/**/*',
     // 配置文件 / config files
-    '*.config.js',
-    '*.config.ts',
-    '*.config.json',
-    '*.config.yaml',
-    '*.config.yml',
-    '*.config.toml',
-    // 工具配置 / tool profiles
-    'sonar-project.properties',
-    'jsconfig.json',
+    '*.config.*',
+    // 配置 / profiles
+    '*.properties',
+    '*.json',
+    '*.yaml',
+    '*.yml',
+    '*.toml',
     // 包管理器文件 / package manager files
     'package.json',
     'package-lock.json',
     'yarn.lock',
     'pnpm-lock.yaml',
     'pnpm-workspace.yaml',
+    'bun.lockb',
     // 点文件夹和文件 / dot dirs & dot files
     '.*/**/*',
     '**/.*',
@@ -158,10 +216,6 @@ const DEFAULT_OPTIONS = {
     '**/*.md',
     '**/*.txt',
     '**/LICENSE',
-    // 资源 / resources
-    'assets/**/*',
-    'public/**/*',
-    'static/**/*',
     // 脚本 / scripts
     '**/*.sh',
     '**/*.bat',
@@ -172,7 +226,8 @@ const DEFAULT_OPTIONS = {
     '**/*.map',
     '**/*.min.*',
   ],
-  output: '.useless/unused-files.json',
+  important: [],
+  output: '.unimported/unimported-files.json',
   debug: false,
 }
 
@@ -188,6 +243,7 @@ const PRESET_OPTIONS = {
     ignores: [
       ...DEFAULT_OPTIONS.ignores
     ],
+    important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
@@ -200,6 +256,7 @@ const PRESET_OPTIONS = {
     ignores: [
       ...DEFAULT_OPTIONS.ignores
     ],
+    important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
@@ -212,6 +269,7 @@ const PRESET_OPTIONS = {
     ignores: [
       ...DEFAULT_OPTIONS.ignores
     ],
+    important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
@@ -228,94 +286,27 @@ const PRESET_OPTIONS = {
       'router/**/*',
       'app.html',
     ],
+    important: DEFAULT_OPTIONS.important,
     output: DEFAULT_OPTIONS.output,
     debug: DEFAULT_OPTIONS.debug,
   },
 }
 ```
 
-### 示例 / Example
-
-选项 / Options:
-
-webpack.config.js
-
-```js
-// TODO: Need example
-```
-
-vue.config.js
-
-```js
-// TODO: Need example
-```
-
-nuxt.config.js
-
-```js
-export default {
-  // ...
-
-  build: {
-    plugins: [
-      new UselessAnalyzerWebpackPlugin({
-        preset: 'nuxt',
-        ignores: [
-          // 添加你需要忽略的文件... / Add files you need to ignore...
-          '**/*.scss',
-        ],
-        important: [
-          // 添加你不想忽略的文件... / Add files you don't want to ignore...
-        ],
-      })
-    ]
-  }
-
-  // ...
-}
-```
-
-输出 / Output:
-
-<!-- prettier-ignore -->
-```json
-[
-  "assets/styles/old.css",
-  "src/components/UnusedComponent.vue",
-  "src/api/deprecated.js",
-  "src/utils/useless.js"
-]
-```
-
-<!-- prettier-ignore-end -->
-
-## 注意事项 / Attention
+## 🔞 注意事项 / Attention
 
 - 插件会在 webpack 构建完成后执行 / The plugin will be executed after the webpack build is complete
 - 输出文件中的路径是相对于你设置给 `src` 选项的路径 / The path in the output file is relative to the path you set for the 'src' option
 
-## 发布日志 / Release Note
+## 📝 发布日志 / Release Note
 
-### v1.x.x
+### v0.0.0
 
-#### v1.0.x
+#### v0.0.x
 
-- v1.0.0: Refactor
-- v1.0.1: Add ignores
-- v1.0.2: Update github repo url
-- v1.0.3: Add release note
-- v1.0.4 ~ v1.0.5: Add preset option
-- v1.0.6: Improving document
-- v1.0.7: Add important option & other improvements
+- v0.0.1: Based on the old package [useless-analyzer-webpack-plugin](https://www.npmjs.com/package/useless-analyzer-webpack-plugin), support the detection of resources and rename to `unimported-analyzer` for better semantics.
 
-#### v2.0.x
-
-- v2.0.0: Remove support of node<=18
-- v2.0.1: Change to monorepo
-- v2.0.2: Set files field in package.json, to reduce package size
-- v2.0.3: Update ignores & documents
-
-## 已知问题 / Known Issues
+## 🚫 已知问题 / Known Issues
 
 - [ ] Nuxt 项目中的 `.scss` 检测 / `.scss` files detection in Nuxt project
 

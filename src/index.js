@@ -7,7 +7,7 @@ const { minimatch } = require('minimatch')
 
 const { getMergedOptions } = require('./presets')
 
-class UselessAnalyzerWebpackPlugin {
+class UnimportedAnalyzerWebpackPlugin {
   /**
    * Plugin constructor.
    *
@@ -20,7 +20,7 @@ class UselessAnalyzerWebpackPlugin {
 
     this.options = mergedOptions
 
-    // debugLog required `this.options.debug`
+    // debugLog required `this.options.debug` to be true
     this.debugLog('🚀 ~ getMergedOptions ~ mergedOptions:', mergedOptions)
   }
 
@@ -33,22 +33,22 @@ class UselessAnalyzerWebpackPlugin {
     const hooks = compiler.hooks || compiler
     const doneHook = hooks.done || hooks.afterEmit
 
-    doneHook.tap('UselessAnalyzerWebpackPlugin', (stats) => {
+    doneHook.tap('UnimportedAnalyzerWebpackPlugin', (stats) => {
       const compilation = stats.compilation
 
       const srcPath = path.resolve(process.cwd(), this.options.src)
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  srcPath:', srcPath)
+      this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  srcPath:', srcPath)
 
       const allFiles = this.getAllFiles(srcPath)
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  allFiles:', allFiles)
+      this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  allFiles:', allFiles)
 
-      const usedFiles = this.getUsedFiles(compilation)
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  usedFiles:', usedFiles)
+      const importedFiles = this.getImportedFiles(compilation.modules)
+      this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  importedFiles:', importedFiles)
 
-      const unusedFiles = allFiles.filter(file => !usedFiles.has(file))
-      this.debugLog('🚀 ~ UselessAnalyzerWebpackPlugin ~  unusedFiles:', unusedFiles)
+      const unimportedFiles = allFiles.filter(file => !importedFiles.has(file))
+      this.debugLog('🚀 ~ UnimportedAnalyzerWebpackPlugin ~  unimportedFiles:', unimportedFiles)
 
-      this.saveResult(unusedFiles)
+      this.saveResult(unimportedFiles)
     })
   }
 
@@ -218,4 +218,4 @@ class UselessAnalyzerWebpackPlugin {
   }
 }
 
-module.exports = UselessAnalyzerWebpackPlugin
+module.exports = UnimportedAnalyzerWebpackPlugin

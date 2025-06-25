@@ -45,7 +45,7 @@ const DEFAULT_OPTIONS = {
     '**/*.min.*',
   ],
   important: [],
-  output: '.useless/unused-files.json',
+  output: '.unimported/unimported-files.json',
   debug: false,
 }
 

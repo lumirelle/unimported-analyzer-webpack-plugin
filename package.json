@@ -1,22 +1,22 @@
 {
-  "name": "useless-analyzer-webpack-plugin",
-  "version": "2.0.3",
+  "name": "unimported-analyzer-webpack-plugin",
+  "version": "0.0.1",
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
-  "description": "webpack deal useless analyzer plugin",
+  "description": "A webpack plugin to analyze unimported files",
   "author": "Lumirelle",
   "license": "MIT",
-  "homepage": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin#readme",
+  "homepage": "https://github.com/Lumirelle/unimported-analyzer-webpack-plugin#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lumirelle/useless-analyzer-webpack-plugin.git"
+    "url": "git+https://github.com/Lumirelle/unimported-analyzer-webpack-plugin.git"
   },
   "bugs": {
-    "url": "https://github.com/Lumirelle/useless-analyzer-webpack-plugin/issues"
+    "url": "https://github.com/Lumirelle/unimported-analyzer-webpack-plugin/issues"
   },
   "keywords": [
     "webpack",
     "plugin",
-    "useless",
+    "unimported",
     "analyzer"
   ],
   "main": "dist/index.js",
@@ -27,14 +27,14 @@
     "node": ">=18"
   },
   "scripts": {
+    "prepare": "simple-git-hooks",
     "build": "webpack --mode=production",
     "test": "nr test:v4 && nr test:v5",
     "test:v4": "cd test/webpack4 && nr build",
     "test:v5": "cd test/webpack5 && nr build",
     "prepack": "nr build",
     "release": "bumpp && na publish",
-    "lint": "eslint --cache .",
-    "postinstall": "simple-git-hooks"
+    "lint": "eslint --cache ."
   },
   "peerDependencies": {
     "webpack": ">=4.0.0"
