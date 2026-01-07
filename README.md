@@ -1,5 +1,11 @@
 # Unimported Analyzer Webpack Plugin
 
+> [!Caution]
+>
+> 请使用 [Knip](https://knip.dev/) 作为替代！
+>
+> Please use [Knip](https://knip.dev/) as a replacement!
+
 这是一个用于分析项目中**未导入代码文件**的 Webpack 插件，支持 Webpack 4 和 5。
 
 This is a Webpack plugin for analyzing **unimported files** in a project, supporting Webpack 4 and 5.
